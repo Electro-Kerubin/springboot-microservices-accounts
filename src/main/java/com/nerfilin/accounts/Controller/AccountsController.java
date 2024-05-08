@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @AllArgsConstructor
 public class AccountsController {
 
+    @Autowired
     private IAccountsService iAccountsService;
 
     @PostMapping("/create")
