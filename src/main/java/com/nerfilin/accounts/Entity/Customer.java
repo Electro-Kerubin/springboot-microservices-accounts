@@ -25,8 +25,8 @@ import lombok.ToString;
 public class Customer extends BaseEntity implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
     
     private String name;
