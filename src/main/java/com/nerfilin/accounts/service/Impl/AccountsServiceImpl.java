@@ -58,7 +58,7 @@ public class AccountsServiceImpl implements IAccountsService {
 
     @Override
     public CustomerDto fetchAccount(String mobileNumber) {
-        // TODO Auto-generated method stub
+
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
             ()->new ResourceNotFountException("Customer", "mobileNumber", mobileNumber)
         );
@@ -71,5 +71,31 @@ public class AccountsServiceImpl implements IAccountsService {
         customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(account, new AccountsDto()));
 
         return customerDto;
+    }
+
+    @Override
+    public boolean updateAccount(CustomerDto customerDto) {
+        
+        boolean isUpdate = false;
+        AccountsDto accountsDto = customerDto.getAccountsDto();
+        if(accountsDto != null) {
+            Account account = accountsRepository.findById(accountsDto.getAccountNumber()).orElseThrow(
+                ()-> new ResourceNotFountException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
+            );
+
+            AccountsMapper.mapToAccounts(accountsDto, account);
+            account = accountsRepository.save(account);
+
+            Long customerId = account.getCustomerId();
+            Customer customer = customerRepository.findById(customerId).orElseThrow(
+                ()-> new ResourceNotFountException("Customer", "CustomerId", customerId.toString())
+            );
+
+            CustomerMapper.mapToCustomer(customer, customerDto);
+            customerRepository.save(customer);
+            isUpdate = true;
+        }
+
+        return isUpdate;
     }
 }
