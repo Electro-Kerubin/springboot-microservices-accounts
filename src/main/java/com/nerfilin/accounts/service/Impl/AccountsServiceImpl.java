@@ -8,13 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.nerfilin.accounts.Entity.Account;
 import com.nerfilin.accounts.Entity.Customer;
+import com.nerfilin.accounts.dto.AccountsDto;
 import com.nerfilin.accounts.dto.CustomerDto;
+import com.nerfilin.accounts.mapper.AccountsMapper;
 import com.nerfilin.accounts.mapper.CustomerMapper;
 import com.nerfilin.accounts.repository.AccountsRepository;
 import com.nerfilin.accounts.repository.CustomerRepository;
 import com.nerfilin.accounts.service.IAccountsService;
 import com.nerfilin.accounts.util.AccountsConstants;
 import com.nerfilin.accounts.util.exception.CustomerAlreadyExistsException;
+import com.nerfilin.accounts.util.exception.ResourceNotFountException;
 
 import lombok.AllArgsConstructor;
 
@@ -51,5 +54,22 @@ public class AccountsServiceImpl implements IAccountsService {
         newAccount.setCreatedAt(LocalDateTime.now());
         newAccount.setCreatedBy("AnonymousTest");
         return newAccount;
+    }
+
+    @Override
+    public CustomerDto fetchAccount(String mobileNumber) {
+        // TODO Auto-generated method stub
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+            ()->new ResourceNotFountException("Customer", "mobileNumber", mobileNumber)
+        );
+
+        Account account = accountsRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
+            ()->new ResourceNotFountException("Account", "customerId", customer.getCustomerId().toString())
+        );
+
+        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        customerDto.setAccountsDto(AccountsMapper.mapToAccountsDto(account, new AccountsDto()));
+
+        return customerDto;
     }
 }
