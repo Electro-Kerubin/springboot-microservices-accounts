@@ -12,6 +12,19 @@ import com.nerfilin.accounts.dto.ErrorResponseDto;
 public class GlobalExceptionHandler {
     
     @ExceptionHandler(CustomerAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleGlobalException(CustomerAlreadyExistsException exception,
+                                                                                WebRequest webRequest) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+            webRequest.getDescription(false),
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            exception.getMessage(),
+            LocalDateTime.now()
+        );
+
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(CustomerAlreadyExistsException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(CustomerAlreadyExistsException exception,
                                                                                 WebRequest webRequest) {
         ErrorResponseDto errorResponseDto = new ErrorResponseDto(
@@ -21,7 +34,7 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
 
-        return new ResponseEntity<>(errorResponseDto, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponseDto, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(CustomerAlreadyExistsException.class)
