@@ -9,12 +9,15 @@ import com.nerfilin.accounts.dto.ResponseDto;
 import com.nerfilin.accounts.service.IAccountsService;
 import com.nerfilin.accounts.util.AccountsConstants;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,13 +28,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
 @AllArgsConstructor
+@Validated
 public class AccountsController {
 
     @Autowired
     private IAccountsService iAccountsService;
 
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
         
         iAccountsService.createAccount(customerDto);
 
@@ -49,7 +53,7 @@ public class AccountsController {
 
 
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccountDetails(@RequestBody CustomerDto customerDto) {
+    public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto) {
         boolean isUpdate = iAccountsService.updateAccount(customerDto);
         if(isUpdate) {
             return ResponseEntity
@@ -63,7 +67,9 @@ public class AccountsController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto>deleteAccountDetails(@RequestParam String mobileNumber) {
+    public ResponseEntity<ResponseDto>deleteAccountDetails(@RequestParam 
+                                                            @Pattern(regexp = "(^$|[0-9]{9})", message = "Mobile number must be 9 digits")
+                                                            String mobileNumber) {
         boolean isDelete = iAccountsService.deteleAccount(mobileNumber);
         if(isDelete) {
             return ResponseEntity

@@ -34,7 +34,6 @@ public class Account extends BaseEntity implements Serializable {
     @Column(name = "account_type")
     private String accountType;
 
-    @Column(name = "branch_address")
     private String branchAddress;
 
 }
